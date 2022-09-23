@@ -1,0 +1,316 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>2. Error origin | 是甜豆腐脑</title><meta name="keywords" content="深度学习"><meta name="author" content="是甜豆腐脑"><meta name="copyright" content="是甜豆腐脑"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="Where does the error come from?Review之前有提到说，不同的function set，也就是不同的model，它对应的error是不同的；越复杂的model，也许performance会越差，所以今天要讨论的问题是，这个error来自什么地方  error due to &#x3D;&#x3D;bias&#x3D;&#x3D; error due to &amp;#x3D">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2. Error origin">
+<meta property="og:url" content="http://franny77.github.io/2022/07/13/2.%20Error%20origin/index.html">
+<meta property="og:site_name" content="是甜豆腐脑">
+<meta property="og:description" content="Where does the error come from?Review之前有提到说，不同的function set，也就是不同的model，它对应的error是不同的；越复杂的model，也许performance会越差，所以今天要讨论的问题是，这个error来自什么地方  error due to &#x3D;&#x3D;bias&#x3D;&#x3D; error due to &amp;#x3D">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://imgoss.cnu.cc/2204/27/a4383d0f926b346eb1fe8ff128e5b703.jpg?x-oss-process=style/content">
+<meta property="article:published_time" content="2022-07-13T06:45:40.000Z">
+<meta property="article:modified_time" content="2022-09-22T08:17:03.711Z">
+<meta property="article:author" content="是甜豆腐脑">
+<meta property="article:tag" content="深度学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://imgoss.cnu.cc/2204/27/a4383d0f926b346eb1fe8ff128e5b703.jpg?x-oss-process=style/content"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://franny77.github.io/2022/07/13/2.%20Error%20origin/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: ture
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '2. Error origin',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-09-22 16:17:03'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/./img/tx.JPG" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">19</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">18</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 链接</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('http://imgoss.cnu.cc/2204/27/a4383d0f926b346eb1fe8ff128e5b703.jpg?x-oss-process=style/content')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">是甜豆腐脑</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 链接</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></li></ul></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">2. Error origin</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-07-13T06:45:40.000Z" title="发表于 2022-07-13 14:45:40">2022-07-13</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-09-22T08:17:03.711Z" title="更新于 2022-09-22 16:17:03">2022-09-22</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">6.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>22分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="2. Error origin"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="Where-does-the-error-come-from"><a href="#Where-does-the-error-come-from" class="headerlink" title="Where does the error come from?"></a>Where does the error come from?</h1><h4 id="Review"><a href="#Review" class="headerlink" title="Review"></a>Review</h4><p>之前有提到说，不同的function set，也就是不同的model，它对应的error是不同的；越复杂的model，也许performance会越差，所以今天要讨论的问题是，这个error来自什么地方</p>
+<ul>
+<li>error due to &#x3D;&#x3D;<strong>bias</strong>&#x3D;&#x3D;</li>
+<li>error due to &#x3D;&#x3D;<strong>variance</strong>&#x3D;&#x3D;</li>
+</ul>
+<p>了解error的来源其实是很重要的，因为我们可以针对它挑选适当的方法来improve自己的model，提高model的准确率，而不会毫无头绪<br><img src="https://img-blog.csdnimg.cn/733610eb50e24f1c89c3f181906d6c80.png" alt="Bias"></p>
+<h4 id="抽样分布"><a href="#抽样分布" class="headerlink" title="抽样分布"></a>抽样分布</h4><h5 id="widehat-y-和-y-真值和估测值"><a href="#widehat-y-和-y-真值和估测值" class="headerlink" title="$\widehat{y}$ 和 $y^*$  真值和估测值"></a>$\widehat{y}$ 和 $y^*$  真值和估测值</h5><p>$\widehat{y}$ 表示那个真正的 function，而 $f^*$ 表示这个 $\widehat{f}$ 的估测值estimator</p>
+<p>就好像在打靶，$\widehat{f}$是靶的中心点，收集到一些data做training以后，你会得到一个你觉得最好的function即$f^*$，这个$f^*$落在靶上的某个位置，它跟靶中心有一段距离，这段距离就是由Bias和variance决定的</p>
+<p>bias：偏差；variance：方差  -&gt; 实际上对应着物理实验中系统误差和随机误差的概念，假设有n组数据，每一组数据都会产生一个相应的$f^*$，此时bias表示所有$f^*$的平均落靶位置和真值靶心的距离，variance表示这些$f^*$的集中程度</p>
+<h5 id="抽样分布的理论-概率论与数理统计"><a href="#抽样分布的理论-概率论与数理统计" class="headerlink" title="抽样分布的理论(概率论与数理统计)"></a>抽样分布的理论(概率论与数理统计)</h5><p>假设独立变量为x(这里的x代表每次独立地从不同的training data里训练找到的$f^*$)，那么</p>
+<p>总体期望$E(x)&#x3D;u$ ；总体方差$Var(x)&#x3D;\sigma^2$ </p>
+<h6 id="用样本均值-overline-x-估测总体期望-u"><a href="#用样本均值-overline-x-估测总体期望-u" class="headerlink" title="用样本均值$\overline{x}$估测总体期望$u$"></a>用样本均值$\overline{x}$估测总体期望$u$</h6><p>由于我们只有有限组样本 $Sample \ N \ points:{x^1,x^2,…,x^N}$，故</p>
+<p>样本均值$\overline{x}&#x3D;\frac{1}{N}\sum\limits_{i&#x3D;1}^{N}x^i$ ；样本均值的期望$E(\overline{x})&#x3D;E(\frac{1}{N}\sum\limits_{i&#x3D;1}^{N}x^i)&#x3D;u$ ; 样本均值的方差$Var(\overline{x})&#x3D;\frac{\sigma^2}{N}$</p>
+<p>**样本均值 $\overline{x}$的期望是总体期望$u$**，也就是说$\overline{x}$是按概率对称地分布在总体期望$u$的两侧的；而$\overline{x}$分布的密集程度取决于N，即数据量的大小，如果N比较大，$\overline{x}$就会比较集中，如果N比较小，$\overline{x}$就会以$u$为中心分散开来</p>
+<p>综上，&#x3D;&#x3D;样本均值$\overline{x}$以总体期望$u$为中心对称分布，可以用来估测总体期望$u$&#x3D;&#x3D;</p>
+<h6 id="用样本方差-s-2-估测总体方差-sigma-2"><a href="#用样本方差-s-2-估测总体方差-sigma-2" class="headerlink" title="用样本方差$s^2$估测总体方差$\sigma^2$"></a>用样本方差$s^2$估测总体方差$\sigma^2$</h6><p>由于我们只有有限组样本 $Sample \ N \ points:{x^1,x^2,…,x^N}$，故</p>
+<p>样本均值$\overline{x}&#x3D;\frac{1}{N}\sum\limits_{i&#x3D;1}^{N}x^i$ ；样本方差$s^2&#x3D;\frac{1}{N-1}\sum\limits_{i&#x3D;1}^N(x^i-\overline{x})^2$ ；样本方差的期望$E(s^2)&#x3D;\sigma^2$ ； 样本方差的方差$Var(s^2)&#x3D;\frac{2\sigma^4}{N-1}$</p>
+<p>**样本方差$s^2$的期望是总体方差$\sigma^2$**，而$s^2$分布的密集程度也取决于N</p>
+<p>同理，&#x3D;&#x3D;样本方差$s^2$以总体方差$\sigma^2$为中心对称分布，可以用来估测总体方差$\sigma^2$&#x3D;&#x3D;</p>
+<h5 id="回到regression的问题上来"><a href="#回到regression的问题上来" class="headerlink" title="回到regression的问题上来"></a>回到regression的问题上来</h5><p>现在我们要估测的是靶的中心$\widehat{f}$，每次collect data训练出来的$f^*$是打在靶上的某个点；产生的error取决于：</p>
+<ul>
+<li>多次实验得到的 $f^*$ 的期望 $\overline{f}$ 与靶心 $\widehat{f}$ 之间的bias——$E(f^*)$，可以形象地理解为瞄准的位置和靶心的距离的偏差</li>
+<li>多次实验的 $f^*$ 之间的 variance—— $Var(f^*)$ ，可以形象地理解为多次打在靶上的点的集中程度</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/71f0d4517d7b4f058885c172af96aeed.png" alt="bias-variance"><br>说到这里，可能会产生一个疑惑：我们之前不就只做了一次实验吗？我们就collect了十笔 data，然后training出来了一个$f^*$，然后就结束了。那怎么找很多个$f^*$呢？怎么知道它的 bias 和 variance 有多大呢？</p>
+<h5 id="f-取决于-model-的复杂程度以及data的数量"><a href="#f-取决于-model-的复杂程度以及data的数量" class="headerlink" title="$f^*$ 取决于 model 的复杂程度以及data的数量"></a>$f^*$ 取决于 model 的复杂程度以及data的数量</h5><p>假设这里有多个平行宇宙，每个空间里都在用10只宝可梦的data去找$f^*$，由于不同宇宙中宝可梦的data是不同的，因此即使使用的是同一个model，最终获得的$f^*$都会是不同的</p>
+<p>于是我们做100次相同的实验，把这100次实验找出来的100条$f^*$的分布画出来</p>
+<h6 id="f-的variance取决于model的复杂程度和data的数量"><a href="#f-的variance取决于model的复杂程度和data的数量" class="headerlink" title="$f^*$的variance取决于model的复杂程度和data的数量"></a>$f^*$的variance取决于model的复杂程度和data的数量</h6><p>$f^*$的variance是由model决定的，一个简单的model在不同的training data下可以获得比较稳定分布的$f^*$，而复杂的model在不同的training data下的分布比较杂乱(如果data足够多，那复杂的model也可以得到比较稳定的分布)</p>
+<p>如果采用比较简单的model，那么每次在不同data下的实验所得到的不同的$f^*$之间的variance是比较小的，就好像说，你在射击的时候，每次击中的位置是差不多的，就如同下图中的linear model，100次实验找出来的$f^*$都是差不多的</p>
+<p>但是如果model比较复杂，那么每次在不同data下的实验所得到的不同的$f^*$之间的variance是比较大的，它的散布就会比较开，就如同下图中含有高次项的model，每一条$f^*$都长得不太像，并且散布得很开</p>
+<blockquote>
+<p>那为什么比较复杂的model，它的散布就比较开呢？比较简单的model，它的散布就比较密集呢？</p>
+</blockquote>
+<p>原因其实很简单，其实前面在讲regularization正规化的时候也提到了部分原因。简单的model实际上就是没有高次项的model，或者高次项的系数非常小的model，这样的model表现得相当平滑，受到不同的data的影响是比较小的</p>
+<p>举一个很极端的例子，我们的整个model(function set)里面，就一个function：f&#x3D;c，这个function只有一个常数项，因此无论training data怎么变化，从这个最简单的model里找出来的$f^*$都是一样的，它的variance就是等于0</p>
+<h6 id="f-的bias只取决于model的复杂程度"><a href="#f-的bias只取决于model的复杂程度" class="headerlink" title="$f^*$的bias只取决于model的复杂程度"></a>$f^*$的bias只取决于model的复杂程度</h6><p>bias是说，我们把所有的$f^*$平均起来得到$E(f^*)&#x3D;\overline{f^*}$，这个$\overline{f^*}$与真值$\widehat{f}$有多接近</p>
+<p>当然这里会有一个问题是说，总体的真值$\widehat{f}$我们根本就没有办法知道，因此这里只是假定了一个$\widehat{f}$</p>
+<p>下面的图示中，<strong>红色</strong>线条部分代表5000次实验分别得到的$f^*$，<strong>黑色</strong>线条部分代表真实值$\widehat{f}$，<strong>蓝色</strong>线条部分代表5000次实验得到的$f^*$的平均值$\overline{f}$</p>
+<p><img src="https://img-blog.csdnimg.cn/48fd42294abe4a6992b0885fad26aa79.png" alt="5000-tests"></p>
+<p>根据上图我们发现，当model比较简单的时候，每次实验得到的$f^*$之间的variance会比较小，这些$f^*$会稳定在一个范围内，但是它们的平均值$\overline{f}$距离真实值$\widehat{f}$会有比较大的偏差；而当model比较复杂的时候，每次实验得到的$f^*$之间的variance会比较大，实际体现出来就是每次重新实验得到的$f^*$都会与之前得到的有较大差距，但是这些差距较大的$f^*$的平均值$\overline{f}$却和真实值$\widehat{f}$比较接近</p>
+<p>上图分别是含有一次项、三次项和五次项的model做了5000次实验后的结果，你会发现model越复杂，比如含有5次项的model那一幅图，每一次实验得到的$f^*$几乎是杂乱无章，遍布整幅图的；但是他们的平均值却和真实值$\widehat{f}$吻合的很好。也就是说，复杂的model，单次实验的结果是没有太大参考价值的，但是如果把考虑多次实验的结果的平均值，也许会对最终的结果有帮助</p>
+<p>注：这里的单次实验指的是，用一组training data训练出model的一组有效参数以构成$f^*$(每次独立实验使用的training data都是不同的)</p>
+<h6 id="因此："><a href="#因此：" class="headerlink" title="因此："></a>因此：</h6><ul>
+<li>如果是一个比较简单的model，那它有比较小的variance和比较大的bias。就像下图中左下角的打靶模型，每次实验的$f^*$都比较集中，但是他们平均起来距离靶心会有一段距离(比较适合实验次数少甚至只有单次实验的情况)</li>
+<li>如果是一个比较复杂的model，每次实验找出来的$f^*$都不一样，它有比较大的variance但是却有比较小的bias。就像下图中右下角的打靶模型，每次实验的$f^*$都比较分散，但是他们平均起来的位置与靶心比较接近(比较适合多次实验的情况)</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/9528f2260af8404885087e8753e737da.png" alt="model-bias"></p>
+<h6 id="为什么会这样？"><a href="#为什么会这样？" class="headerlink" title="为什么会这样？"></a>为什么会这样？</h6><p>实际上我们的model就是一个function set，当你定好一个model的时候，实际上就已经定好这个function set的范围了，那个最好的function只能从这个function set里面挑出来</p>
+<p>如果是一个简单的model，它的function set的space是比较小的，这个范围可能根本就没有包含你的target；如果这个function set没有包含target，那么不管怎么sample，平均起来永远不可能是target(这里的space指上图中左下角那个被model圈起来的空间)</p>
+<p>如果这个model比较复杂，那么这个model所代表的function set的space是比较大的(简单的model实际上就是复杂model的子集)，那它就很有可能包含target，只是它没有办法找到那个target在哪，因为你给的training data不够，你给的training data每一次都不一样，所以他每一次找出来的$f^*$都不一样，但是如果他们是散布在这个target附近的，那平均起来，实际上就可以得到和target比较接近的位置(这里的space指上图中右下角那个被model圈起来的空间)</p>
+<h4 id="Bias-vs-Variance"><a href="#Bias-vs-Variance" class="headerlink" title="Bias vs Variance"></a>Bias vs Variance</h4><p>由前面的讨论可知，比较简单的model，variance比较小，bias比较大；而比较复杂的model，bias比较小，variance比较大</p>
+<h5 id="bias和variance对error的影响"><a href="#bias和variance对error的影响" class="headerlink" title="bias和variance对error的影响"></a>bias和variance对error的影响</h5><p>因此下图中(也就是之前我们得到的从最高项为一次项到五次项的五个model的error表现)，绿色的线代表variance造成的error，红色的线代表bias造成的error，蓝色的线代表这个model实际观测到的error</p>
+<p>$error_{实际}&#x3D;error_{variance}+error_{bias}——蓝线为红线和绿线之和$</p>
+<p>可以发现，随着model的逐渐复杂：</p>
+<ul>
+<li>bias逐渐减小，bias所造成的error也逐渐下降，也就是打靶的时候瞄得越来越准，体现为图中的红线</li>
+<li>variance逐渐变大，variance所造成的error也逐渐增大，也就是虽然瞄得越来越准，但是每次射出去以后，你的误差是越来越大的，体现为图中的绿线</li>
+<li>当bias和variance这两项同时被考虑的时候，得到的就是图中的蓝线，也就是实际体现出来的error的变化；实际观测到的error先是减小然后又增大，因此实际error为最小值的那个点，即为bias和variance的error之和最小的点，就是表现最好的model</li>
+<li>&#x3D;&#x3D;<strong>如果实际error主要来自于variance很大，这个状况就是overfitting过拟合；如果实际error主要来自于bias很大，这个状况就是underfitting欠拟合</strong>&#x3D;&#x3D;(可以理解为，overfitting就是过分地包围了靶心所在的space，而underfitting则是还未曾包围到靶心所在的space)<br><img src="https://img-blog.csdnimg.cn/db9e1ef847ff47929a34a348fbed9d78.png" alt="bias-vs-variance"><br>这就是为什么我们之前要先计算出每一个model对应的error(每一个model都有唯一对应的$f^*$，因此也有唯一对应的error)，再挑选error最小的model的原因，只有这样才能综合考虑bias和variance的影响，找到一个实际error最小的model</li>
+</ul>
+<h5 id="必须要知道自己的error主要来自于哪里"><a href="#必须要知道自己的error主要来自于哪里" class="headerlink" title="必须要知道自己的error主要来自于哪里"></a>必须要知道自己的error主要来自于哪里</h5><h6 id="你现在的问题是bias大，还是variance大？"><a href="#你现在的问题是bias大，还是variance大？" class="headerlink" title="你现在的问题是bias大，还是variance大？"></a>你现在的问题是bias大，还是variance大？</h6><p>当你自己在做research的时候，你必须要搞清楚，手头上的这个model，它目前主要的error是来源于哪里；你觉得你现在的问题是bias大，还是variance大</p>
+<p>你应该先知道这件事情，你才能知道你的future work，你要improve你的model的时候，你应该要走哪一个方向</p>
+<h6 id="那怎么知道现在是bias大还是variance大呢？"><a href="#那怎么知道现在是bias大还是variance大呢？" class="headerlink" title="那怎么知道现在是bias大还是variance大呢？"></a>那怎么知道现在是bias大还是variance大呢？</h6><ul>
+<li><p>如果model没有办法fit training data的examples，代表bias比较大，这时是underfitting</p>
+<p>  形象地说，就是该model找到的$f^*$上面并没有training data的大部分样本点，如下图中的linear model，我们只是example抽样了这几个蓝色的样本点，而这个model甚至没有fit这少数几个蓝色的样本点(这几个样本点没有在$f^*$上)，代表说这个model跟正确的model是有一段差距的，所以这个时候是bias大的情况，是underfitting</p>
+</li>
+<li><p>如果model可以fit training data，在training data上得到小的error，但是在testing data上，却得到一个大的error，代表variance比较大，这时是overfitting</p>
+</li>
+</ul>
+<h6 id="如何针对性地处理bias大-or-variance大的情况呢？"><a href="#如何针对性地处理bias大-or-variance大的情况呢？" class="headerlink" title="如何针对性地处理bias大 or variance大的情况呢？"></a>如何针对性地处理bias大 or variance大的情况呢？</h6><p>遇到bias大或variance大的时候，你其实是要用不同的方式来处理它们</p>
+<p>1、<strong>如果bias比较大</strong></p>
+<p>bias大代表，你现在这个model里面可能根本没有包含你的target，$\widehat{f}$可能根本就不在你的function set里</p>
+<p>对于error主要来自于bias的情况，是由于该model(function set)本来就不好，collect更多的data是没有用的，必须要从model本身出发</p>
+<ul>
+<li><p>redesign，重新设计你的model</p>
+<ul>
+<li><p>增加更多的features作为model的input输入变量</p>
+<p>  比如pokemon的例子里，只考虑进化前cp值可能不够，还要考虑hp值、species种类…作为model新的input变量</p>
+</li>
+<li><p>让model变得更复杂，增加高次项</p>
+<p>  比如原本只是linear model，现在考虑增加二次项、三次项…</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>2、<strong>如果variance比较大</strong></p>
+<ul>
+<li>增加data<ul>
+<li>如果是5次式，找100个$f^*$，每次实验我们只用10只宝可梦的数据训练model，那我们找出来的100个$f^*$的散布就会像下图一样杂乱无章；但如果每次实验我们用100只宝可梦的数据训练model，那我们找出来的100个$f^*$的分布就会像下图所示一样，非常地集中</li>
+<li>增加data是一个很有效控制variance的方法，假设你variance太大的话，collect data几乎是一个万能丹一样的东西，并且它不会伤害你的bias</li>
+<li>但是它存在一个很大的问题是，实际上并没有办法去collect更多的data</li>
+<li>如果没有办法collect更多的data，其实有一招，根据你对这个问题的理解，自己去generate更多“假的”data<ul>
+<li>比如手写数字识别，因为每个人手写数字的角度都不一样，那就把所有training data里面的数字都左转15°，右转15°</li>
+<li>比如做火车的影像辨识，只有从左边开过来的火车影像资料，没有从右边开过来的火车影像资料，该怎么办？实际上可以把每张图片都左右颠倒，就generate出右边的火车数据了，这样就多了一倍data出来</li>
+<li>比如做语音辨识的时候，只有男生说的“你好”，没有女生说的“你好”，那就用男生的声音用一个变声器把它转化一下，这样男女生的声音就可以互相转化，这样data就可以多出来</li>
+<li>比如现在你只有录音室里录下的声音，但是detection实际要在真实场景下使用的，那你就去真实场景下录一些噪音加到原本的声音里，就可以generate出符合条件的data了</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Regularization(正规化)<ul>
+<li>就是在loss function里面再加一个与model高次项系数相关的term，它会希望你的model里高次项的参数越小越好，也就是说希望你今天找出来的曲线越平滑越好；这个新加的term前面可以有一个weight，代表你希望你的曲线有多平滑</li>
+<li>下图中Regularization部分，左边第一幅图是没有加regularization的test；第二幅图是加了regularization后的情况，一些怪怪的、很不平滑的曲线就不会再出现，所有曲线都集中在比较平滑的区域；第三幅图是增加weight的情况，让曲线变得更平滑</li>
+<li>加了regularization以后，因为你强迫所有的曲线都要比较平滑，所以这个时候也会让你的variance变小；但regularization是可能会伤害bias的，因为它实际上调整了function set的space范围，变成它只包含那些比较平滑的曲线，这个缩小的space可能没有包含原先在更大space内的$\widehat{f}$，因此伤害了bias，所以当你做regularization的时候，需要调整regularization的weight，在variance和bias之间取得平衡<br><img src="https://img-blog.csdnimg.cn/1c8a0e2a5e174745b7ce2f0bf80871e0.png#pic_center" alt="large-variance"></li>
+</ul>
+</li>
+</ul>
+<p>注：variance比较大的case，加以图例解释如下：(假设这里我们无法获得更多的data)</p>
+<p>1、蓝色区域代表最初的情况，此时model比较复杂，function set的space范围比较大，包含了target靶心，但由于data不够，$f^*$比较分散，variance比较大</p>
+<p>2、红色区域代表进行regularization之后的情况，此时model的function set范围被缩小成只包含平滑的曲线，space减小，variance当然也跟着变小，但这个缩小后的space实际上并没有包含原先已经包含的target靶心，因此该model的bias变大</p>
+<p>3、橙色区域代表增大regularization的weight的情况，增大weight实际上就是放大function set的space，慢慢调整至包含target靶心，此时该model的bias变小，而相较于一开始的case，由于限定了曲线的平滑度(由weight控制平滑度的阈值)，该model的variance也比较小</p>
+<p>实际上，通过regularization优化model的过程就是上述的1、2、3步骤，不断地调整regularization的weight，使model的bias和variance达到一个最佳平衡的状态(可以通过error来评价状态的好坏，weight需要慢慢调参)<br><img src="https://img-blog.csdnimg.cn/960e133445144bfb8c6ab7c6332c0aa5.png" alt="regularization-illustration"></p>
+<h4 id="Model-Selection"><a href="#Model-Selection" class="headerlink" title="Model Selection"></a>Model Selection</h4><p>我们现在会遇到的问题往往是这样：我们有很多个model可以选择，还有很多参数可以调，比如regularization的weight，那通常我们是在bias和variance之间做一些trade-off权衡</p>
+<p>我们希望找一个model，它variance够小，bias也够小，这两个合起来给我们最小的testing data的error</p>
+<h5 id="但是以下这些事情，是你不应该做的："><a href="#但是以下这些事情，是你不应该做的：" class="headerlink" title="但是以下这些事情，是你不应该做的："></a>但是以下这些事情，是你不应该做的：</h5><p>你手上有training set，有testing set，接下来你想知道model1、model2、model3里面，应该选哪一个model，然后你就分别用这三个model去训练出$f_1^*,f_2^*,f_3^*$，然后把它apply到testing set上面，分别得到三个error为0.9，0.7，0.5，这里很直觉地会认为是model3最好</p>
+<p>但是现在可能的问题是，这个testing set是你自己手上的testing set，是你自己拿来衡量model好坏的testing set，真正的testing set是你没有的；注意到你自己手上的这笔testing set，它有自己的一个bias(这里的bias跟之前提到的略有不同，可以理解为自己的testing data跟实际的testing data会有一定的偏差存在)</p>
+<p>所以你今天那这个testing set来选择最好的model的时候，它在真正的testing set上不见得是最好的model，通常是比较差的，所以你实际得到的error是会大于你在自己的testing set上估测到的0.5</p>
+<p>以PM2.5预测为例，提供的数据分为training set，public testing set和private testing set三部分，其中public的testing set是供你测试自己的model的，private的testing data是你暂且未知的真正测试数据，现在你的model3在public testing set上的error为0.5，已经成功beat baseline，但是在private的testing set上，你的model3也许根本就没有beat the baseline，反而是model1和model2可能会表现地更好</p>
+<h5 id="怎样做才是可靠的呢？"><a href="#怎样做才是可靠的呢？" class="headerlink" title="怎样做才是可靠的呢？"></a>怎样做才是可靠的呢？</h5><h6 id="training-data分成training-set和validation-set"><a href="#training-data分成training-set和validation-set" class="headerlink" title="training data分成training set和validation set"></a>training data分成training set和validation set</h6><p>你要做的事情是，把你的training set分成两组：</p>
+<ul>
+<li>一组是真正拿来training model的，叫做training set(训练集)</li>
+<li>另外一组不拿它来training model，而是拿它来选model，叫做validation set(验证集)</li>
+</ul>
+<p>&#x3D;&#x3D;先在training set上找出每个model最好的function $f^*$，然后用validation set来选择你的model&#x3D;&#x3D;</p>
+<p>也就是说，你手头上有3个model，你先把这3个model用training set训练出三个$f^*$，接下来看一下它们在validation set上的performance</p>
+<p>假设现在model3的performance最好，那你可以直接把这个model3的结果拿来apply在testing data上</p>
+<p>如果你担心现在把training set分成training和validation两部分，感觉training data变少的话，可以这样做：已经从validation决定model3是最好的model，那就定住model3不变(function的表达式不变)，然后用全部的data在model3上面再训练一次(使用全部的data去更新model3表达式的参数)</p>
+<p>这个时候，如果你把这个训练好的model的$f^*$apply到public testing set上面，你可能会得到一个大于0.5的error，虽然这么做，你得到的error表面上看起来是比较大的，但是<strong>这个时候你在public set上的error才能够真正反映你在private set上的error</strong></p>
+<p><img src="https://img-blog.csdnimg.cn/22b7fd681f584e569280d538bf84b67c.png" alt="cross-validation"></p>
+<h6 id="考虑真实的测试集"><a href="#考虑真实的测试集" class="headerlink" title="考虑真实的测试集"></a>考虑真实的测试集</h6><p>实际上是这样一个关系：</p>
+<blockquote>
+<p>training data(训练集) -&gt; 自己的testing data(测试集) -&gt; 实际的testing data<br>(该流程没有考虑自己的testing data的bias)</p>
+</blockquote>
+<blockquote>
+<p>training set(部分训练集) -&gt; validation set(部分验证集) -&gt; 自己的testing data(测试集) -&gt; 实际的testing data<br>(该流程使用自己的testing data和validation来模拟testing data的bias误差，可以真实地反映出在实际的data上出现的error)</p>
+</blockquote>
+<h6 id="真正的error"><a href="#真正的error" class="headerlink" title="真正的error"></a>真正的error</h6><p>当你得到public set上的error的时候(尽管它可能会很大)，不建议回过头去重新调整model的参数，因为当你再回去重新调整什么东西的时候，你就又会把public testing set的bias给考虑进去了，这就又回到了第一种关系，即围绕着有偏差的testing data做model的优化</p>
+<p>这样的话此时你在public set上看到的performance就没有办法反映实际在private set上的performance了，因为你的model是针对public set做过优化的，虽然public set上的error数据看起来可能会更好看，但是针对实际未知的private set，这个“优化”带来的可能是反作用，反而会使实际的error变大</p>
+<p>当然，你也许几乎没有办法忍住不去做这件事情，在发paper的时候，有时候你会propose一个方法，那你要attach在benchmark的corpus，如果你在testing set上得到一个差的结果，你也几乎没有办法把持自己不回头去调一下你的model，你肯定不会只是写一个paper说这个方法不work这样子(滑稽</p>
+<p>因此这里只是说，你要keep in mind，如果在那个benchmark corpus上面所看到的testing的performance，它的error，肯定是大于它在real的application上应该有的值</p>
+<p>比如说你现在常常会听到说，在image lab的那个corpus上面，error rate都降到3%，那个是超越人类了，但是真的是这样子吗？已经有这么多人玩过这个corpus，已经有这么多人告诉你说前面这些方法都不work，他们都帮你挑过model了，你已经用“testing” data调过参数了，所以如果你把那些model真的apply到现实生活中，它的error rate肯定是大于3%的</p>
+<h6 id="如何划分training-set和validation-set？"><a href="#如何划分training-set和validation-set？" class="headerlink" title="如何划分training set和validation set？"></a>如何划分training set和validation set？</h6><p>那如果training set和validation set分坏了怎么办？如果validation也有怪怪的bias，岂不是对结果很不利？那你要做下面这件事情：</p>
+<p>&#x3D;&#x3D;<strong>N-flod Cross Validation</strong>&#x3D;&#x3D;</p>
+<p>如果你不相信某一次分train和validation的结果的话，那你就分很多种不同的样子</p>
+<p>比如说，如果你做3-flod的validation，意思就是你把training set分成三份，你每一次拿其中一份当做validation set，另外两份当training；分别在每个情境下都计算一下3个model的error，然后计算一下它的average error；然后你会发现在这三个情境下的average error，是model1最好</p>
+<p>然后接下来，你就把用整个完整的training data重新训练一遍model1的参数；然后再去testing data上test</p>
+<p>原则上是，如果你少去根据public testing set上的error调整model的话，那你在private testing set上面得到的error往往是比较接近public testing set上的error的<br><img src="https://img-blog.csdnimg.cn/76bdc6ccae904dab955b6b5c12d4dca3.png" alt="cross-validation"></p>
+<h4 id="总结conclusion"><a href="#总结conclusion" class="headerlink" title="总结conclusion"></a>总结conclusion</h4><p>1、一般来说，error是bias和variance共同作用的结果</p>
+<p>2、model比较简单和比较复杂的情况：</p>
+<ul>
+<li>当model比较简单的时候，variance比较小，bias比较大，此时$f^*$会比较集中，但是function set可能并没有包含真实值$\widehat{f}$；此时model受bias影响较大</li>
+<li>当model比较复杂的时候，bias比较小，variance比较大，此时function set会包含真实值$\widehat{f}$，但是$f^*$会比较分散；此时model受variance影响较大</li>
+</ul>
+<p>3、区分bias大 or variance大的情况</p>
+<ul>
+<li><p>如果连采样的样本点都没有大部分在model训练出来的$f^*$上，说明这个model太简单，bias比较大，是欠拟合</p>
+</li>
+<li><p>如果样本点基本都在model训练出来的$f^*$上，但是testing data上测试得到的error很大，说明这个model太复杂，variance比较大，是过拟合</p>
+</li>
+</ul>
+<p>4、bias大 or variance大的情况下该如何处理</p>
+<ul>
+<li><p>当bias比较大时，需要做的是重新设计model，包括考虑添加新的input变量，考虑给model添加高次项；然后对每一个model对应的$f^*$计算出error，选择error值最小的model(随model变复杂，bias会减小，variance会增加，因此这里分别计算error，取两者平衡点)</p>
+</li>
+<li><p>当variance比较大时，一个很好的办法是增加data(可以凭借经验自己generate data)，当data数量足够时，得到的$f^*$实际上是比较集中的；如果现实中没有办法collect更多的data，那么就采用regularization正规化的方法，以曲线的平滑度为条件控制function set的范围，用weight控制平滑度阈值，使得最终的model既包含$\widehat{f}$，variance又不会太大</p>
+</li>
+</ul>
+<p>5、如何选择model</p>
+<ul>
+<li>选择model的时候呢，我们手头上的testing data与真实的testing data之间是存在偏差的，因此我们要将training data分成training set和validation set两部分，经过validation挑选出来的model再用全部的training data训练一遍参数，最后用testing data去测试error，这样得到的error是模拟过testing bias的error，与实际情况下的error会比较符合</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://FraNny77.github.io">是甜豆腐脑</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://franny77.github.io/2022/07/13/2.%20Error%20origin/">http://franny77.github.io/2022/07/13/2.%20Error%20origin/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://FraNny77.github.io" target="_blank">是甜豆腐脑</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a></div><div class="post_share"><div class="social-share" data-image="http://imgoss.cnu.cc/2204/27/a4383d0f926b346eb1fe8ff128e5b703.jpg?x-oss-process=style/content" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/07/13/1.Regression/"><img class="prev-cover" src="http://imgoss.cnu.cc/2204/27/a4383d0f926b346eb1fe8ff128e5b703.jpg?x-oss-process=style/content" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">1. Regression</div></div></a></div><div class="next-post pull-right"><a href="/2022/07/12/Regularization/"><img class="next-cover" src="http://imgoss.cnu.cc/2204/27/a4383d0f926b346eb1fe8ff128e5b703.jpg?x-oss-process=style/content" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Regularization</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/07/14/3%20.%20Gradient%20descent/" title="3. Gradient descent"><img class="cover" src="http://imgoss.cnu.cc/2204/27/a4383d0f926b346eb1fe8ff128e5b703.jpg?x-oss-process=style/content" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-07-14</div><div class="title">3. Gradient descent</div></div></a></div><div><a href="/2022/07/12/Regularization/" title="Regularization"><img class="cover" src="http://imgoss.cnu.cc/2204/27/a4383d0f926b346eb1fe8ff128e5b703.jpg?x-oss-process=style/content" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-07-12</div><div class="title">Regularization</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/./img/tx.JPG" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">是甜豆腐脑</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">19</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">18</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/FraNny77.io"><i class="fab fa-github"></i><span>Gituhub</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/FraNny77" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:2556725169@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a><a class="social-icon" href="https://blog.csdn.net/FraNny13" target="_blank" title="Blog"><i class="fab fa-algolia"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Where-does-the-error-come-from"><span class="toc-text">Where does the error come from?</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Review"><span class="toc-text">Review</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8A%BD%E6%A0%B7%E5%88%86%E5%B8%83"><span class="toc-text">抽样分布</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#widehat-y-%E5%92%8C-y-%E7%9C%9F%E5%80%BC%E5%92%8C%E4%BC%B0%E6%B5%8B%E5%80%BC"><span class="toc-text">$\widehat{y}$ 和 $y^*$  真值和估测值</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%8A%BD%E6%A0%B7%E5%88%86%E5%B8%83%E7%9A%84%E7%90%86%E8%AE%BA-%E6%A6%82%E7%8E%87%E8%AE%BA%E4%B8%8E%E6%95%B0%E7%90%86%E7%BB%9F%E8%AE%A1"><span class="toc-text">抽样分布的理论(概率论与数理统计)</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#%E7%94%A8%E6%A0%B7%E6%9C%AC%E5%9D%87%E5%80%BC-overline-x-%E4%BC%B0%E6%B5%8B%E6%80%BB%E4%BD%93%E6%9C%9F%E6%9C%9B-u"><span class="toc-text">用样本均值$\overline{x}$估测总体期望$u$</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E7%94%A8%E6%A0%B7%E6%9C%AC%E6%96%B9%E5%B7%AE-s-2-%E4%BC%B0%E6%B5%8B%E6%80%BB%E4%BD%93%E6%96%B9%E5%B7%AE-sigma-2"><span class="toc-text">用样本方差$s^2$估测总体方差$\sigma^2$</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%9B%9E%E5%88%B0regression%E7%9A%84%E9%97%AE%E9%A2%98%E4%B8%8A%E6%9D%A5"><span class="toc-text">回到regression的问题上来</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#f-%E5%8F%96%E5%86%B3%E4%BA%8E-model-%E7%9A%84%E5%A4%8D%E6%9D%82%E7%A8%8B%E5%BA%A6%E4%BB%A5%E5%8F%8Adata%E7%9A%84%E6%95%B0%E9%87%8F"><span class="toc-text">$f^*$ 取决于 model 的复杂程度以及data的数量</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#f-%E7%9A%84variance%E5%8F%96%E5%86%B3%E4%BA%8Emodel%E7%9A%84%E5%A4%8D%E6%9D%82%E7%A8%8B%E5%BA%A6%E5%92%8Cdata%E7%9A%84%E6%95%B0%E9%87%8F"><span class="toc-text">$f^*$的variance取决于model的复杂程度和data的数量</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#f-%E7%9A%84bias%E5%8F%AA%E5%8F%96%E5%86%B3%E4%BA%8Emodel%E7%9A%84%E5%A4%8D%E6%9D%82%E7%A8%8B%E5%BA%A6"><span class="toc-text">$f^*$的bias只取决于model的复杂程度</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E5%9B%A0%E6%AD%A4%EF%BC%9A"><span class="toc-text">因此：</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E8%BF%99%E6%A0%B7%EF%BC%9F"><span class="toc-text">为什么会这样？</span></a></li></ol></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Bias-vs-Variance"><span class="toc-text">Bias vs Variance</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#bias%E5%92%8Cvariance%E5%AF%B9error%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="toc-text">bias和variance对error的影响</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%BF%85%E9%A1%BB%E8%A6%81%E7%9F%A5%E9%81%93%E8%87%AA%E5%B7%B1%E7%9A%84error%E4%B8%BB%E8%A6%81%E6%9D%A5%E8%87%AA%E4%BA%8E%E5%93%AA%E9%87%8C"><span class="toc-text">必须要知道自己的error主要来自于哪里</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#%E4%BD%A0%E7%8E%B0%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98%E6%98%AFbias%E5%A4%A7%EF%BC%8C%E8%BF%98%E6%98%AFvariance%E5%A4%A7%EF%BC%9F"><span class="toc-text">你现在的问题是bias大，还是variance大？</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E9%82%A3%E6%80%8E%E4%B9%88%E7%9F%A5%E9%81%93%E7%8E%B0%E5%9C%A8%E6%98%AFbias%E5%A4%A7%E8%BF%98%E6%98%AFvariance%E5%A4%A7%E5%91%A2%EF%BC%9F"><span class="toc-text">那怎么知道现在是bias大还是variance大呢？</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E9%92%88%E5%AF%B9%E6%80%A7%E5%9C%B0%E5%A4%84%E7%90%86bias%E5%A4%A7-or-variance%E5%A4%A7%E7%9A%84%E6%83%85%E5%86%B5%E5%91%A2%EF%BC%9F"><span class="toc-text">如何针对性地处理bias大 or variance大的情况呢？</span></a></li></ol></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Model-Selection"><span class="toc-text">Model Selection</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BD%86%E6%98%AF%E4%BB%A5%E4%B8%8B%E8%BF%99%E4%BA%9B%E4%BA%8B%E6%83%85%EF%BC%8C%E6%98%AF%E4%BD%A0%E4%B8%8D%E5%BA%94%E8%AF%A5%E5%81%9A%E7%9A%84%EF%BC%9A"><span class="toc-text">但是以下这些事情，是你不应该做的：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%80%8E%E6%A0%B7%E5%81%9A%E6%89%8D%E6%98%AF%E5%8F%AF%E9%9D%A0%E7%9A%84%E5%91%A2%EF%BC%9F"><span class="toc-text">怎样做才是可靠的呢？</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#training-data%E5%88%86%E6%88%90training-set%E5%92%8Cvalidation-set"><span class="toc-text">training data分成training set和validation set</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E8%80%83%E8%99%91%E7%9C%9F%E5%AE%9E%E7%9A%84%E6%B5%8B%E8%AF%95%E9%9B%86"><span class="toc-text">考虑真实的测试集</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E7%9C%9F%E6%AD%A3%E7%9A%84error"><span class="toc-text">真正的error</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%88%92%E5%88%86training-set%E5%92%8Cvalidation-set%EF%BC%9F"><span class="toc-text">如何划分training set和validation set？</span></a></li></ol></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%BB%E7%BB%93conclusion"><span class="toc-text">总结conclusion</span></a></li></ol></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/09/14/MybatisNotes/" title="MybatisNotes"><img src="http://imgoss.cnu.cc/2204/27/a4383d0f926b346eb1fe8ff128e5b703.jpg?x-oss-process=style/content" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="MybatisNotes"/></a><div class="content"><a class="title" href="/2022/09/14/MybatisNotes/" title="MybatisNotes">MybatisNotes</a><time datetime="2022-09-14T01:42:07.000Z" title="发表于 2022-09-14 09:42:07">2022-09-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/09/09/spiderNotes/" title="spyderNotes"><img src="http://cache.yisu.com/upload/admin/customer_case_img/2019-08-08/1565261709.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="spyderNotes"/></a><div class="content"><a class="title" href="/2022/09/09/spiderNotes/" title="spyderNotes">spyderNotes</a><time datetime="2022-09-09T12:34:08.000Z" title="发表于 2022-09-09 20:34:08">2022-09-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/07/14/3%20.%20Gradient%20descent/" title="3. Gradient descent"><img src="http://imgoss.cnu.cc/2204/27/a4383d0f926b346eb1fe8ff128e5b703.jpg?x-oss-process=style/content" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="3. Gradient descent"/></a><div class="content"><a class="title" href="/2022/07/14/3%20.%20Gradient%20descent/" title="3. Gradient descent">3. Gradient descent</a><time datetime="2022-07-14T06:15:56.000Z" title="发表于 2022-07-14 14:15:56">2022-07-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/07/13/1.Regression/" title="1. Regression"><img src="http://imgoss.cnu.cc/2204/27/a4383d0f926b346eb1fe8ff128e5b703.jpg?x-oss-process=style/content" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="1. Regression"/></a><div class="content"><a class="title" href="/2022/07/13/1.Regression/" title="1. Regression">1. Regression</a><time datetime="2022-07-13T07:21:44.000Z" title="发表于 2022-07-13 15:21:44">2022-07-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/07/13/2.%20Error%20origin/" title="2. Error origin"><img src="http://imgoss.cnu.cc/2204/27/a4383d0f926b346eb1fe8ff128e5b703.jpg?x-oss-process=style/content" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="2. Error origin"/></a><div class="content"><a class="title" href="/2022/07/13/2.%20Error%20origin/" title="2. Error origin">2. Error origin</a><time datetime="2022-07-13T06:45:40.000Z" title="发表于 2022-07-13 14:45:40">2022-07-13</time></div></div></div></div></div></div></main><footer id="footer" style="background: #000000"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By 是甜豆腐脑</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">试着和曾经仰望的人并肩</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

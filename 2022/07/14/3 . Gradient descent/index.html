@@ -1,0 +1,219 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>3. Gradient descent | 是甜豆腐脑</title><meta name="keywords" content="深度学习"><meta name="author" content="是甜豆腐脑"><meta name="copyright" content="是甜豆腐脑"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="Gradient DescentReview前面预测宝可梦cp值的例子里，已经初步介绍了Gradient Descent的用法： In step 3,​ we have to solve the following optimization problem: $\theta^{*}&#x3D;\arg \underset{\theta}{\min} L(\theta) \quad$ L : los">
+<meta property="og:type" content="article">
+<meta property="og:title" content="3. Gradient descent">
+<meta property="og:url" content="http://franny77.github.io/2022/07/14/3%20.%20Gradient%20descent/index.html">
+<meta property="og:site_name" content="是甜豆腐脑">
+<meta property="og:description" content="Gradient DescentReview前面预测宝可梦cp值的例子里，已经初步介绍了Gradient Descent的用法： In step 3,​ we have to solve the following optimization problem: $\theta^{*}&#x3D;\arg \underset{\theta}{\min} L(\theta) \quad$ L : los">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://imgoss.cnu.cc/2204/27/a4383d0f926b346eb1fe8ff128e5b703.jpg?x-oss-process=style/content">
+<meta property="article:published_time" content="2022-07-14T06:15:56.000Z">
+<meta property="article:modified_time" content="2022-09-23T13:22:41.742Z">
+<meta property="article:author" content="是甜豆腐脑">
+<meta property="article:tag" content="深度学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://imgoss.cnu.cc/2204/27/a4383d0f926b346eb1fe8ff128e5b703.jpg?x-oss-process=style/content"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://franny77.github.io/2022/07/14/3%20.%20Gradient%20descent/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: ture
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '3. Gradient descent',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-09-23 21:22:41'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/./img/tx.JPG" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">19</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">18</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 链接</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('http://imgoss.cnu.cc/2204/27/a4383d0f926b346eb1fe8ff128e5b703.jpg?x-oss-process=style/content')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">是甜豆腐脑</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 链接</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></li></ul></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">3. Gradient descent</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-07-14T06:15:56.000Z" title="发表于 2022-07-14 14:15:56">2022-07-14</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-09-23T13:22:41.742Z" title="更新于 2022-09-23 21:22:41">2022-09-23</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">3.9k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>14分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="3. Gradient descent"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="Gradient-Descent"><a href="#Gradient-Descent" class="headerlink" title="Gradient Descent"></a>Gradient Descent</h1><h4 id="Review"><a href="#Review" class="headerlink" title="Review"></a>Review</h4><p>前面预测宝可梦cp值的例子里，已经初步介绍了Gradient Descent的用法：</p>
+<p>In step 3,​ we have to solve the following optimization problem:</p>
+<p>$\theta^{*}&#x3D;\arg \underset{\theta}{\min} L(\theta) \quad$</p>
+<p>L : loss function<br>$\theta:$ parameters(上标表示第几组参数，下标表示这组参数中的第几个参数)</p>
+<p>假设$\theta$是参数的集合：Suppose that $\theta$ has two variables $\left{\theta_{1}, \theta_{2}\right}$ </p>
+<p>随机选取一组起始的参数：Randomly start at $\theta^{0}&#x3D;\left[\begin{array}{l}{\theta_{1}^{0}} \ {\theta_{2}^{0}}\end{array}\right] \quad$ </p>
+<p>计算$\theta$处的梯度gradient：$\nabla L(\theta)&#x3D;\left[\begin{array}{l}{\partial L\left(\theta_{1}\right) &#x2F; \partial \theta_{1}} \ {\partial L\left(\theta_{2}\right) &#x2F; \partial \theta_{2}}\end{array}\right]$</p>
+<p>$\left[\begin{array}{l}{\theta_{1}^{1}} \ {\theta_{2}^{1}}\end{array}\right]&#x3D;\left[\begin{array}{l}{\theta_{1}^{0}} \ {\theta_{2}^{0}}\end{array}\right]-\eta\left[\begin{array}{l}{\partial L\left(\theta_{1}^{0}\right) &#x2F; \partial \theta_{1}} \ {\partial L\left(\theta_{2}^{0}\right) &#x2F; \partial \theta_{2}}\end{array}\right] \Rightarrow \theta^{1}&#x3D;\theta^{0}-\eta \nabla L\left(\theta^{0}\right)$</p>
+<p>$\left[\begin{array}{c}{\theta_{1}^{2}} \ {\theta_{2}^{2}}\end{array}\right]&#x3D;\left[\begin{array}{c}{\theta_{1}^{1}} \ {\theta_{2}^{1}}\end{array}\right]-\eta\left[\begin{array}{c}{\partial L\left(\theta_{1}^{1}\right) &#x2F; \partial \theta_{1}} \ {\partial L\left(\theta_{2}^{1}\right) &#x2F; \partial \theta_{2}}\end{array}\right] \Rightarrow \theta^{2}&#x3D;\theta^{1}-\eta \nabla L\left(\theta^{1}\right)$</p>
+<p>下图是将gradient descent在投影到二维坐标系中可视化的样子，图上的每一个点都是$(\theta_1,\theta_2,loss)$在该平面的投影<br><img src="https://img-blog.csdnimg.cn/3b49f5668afd48fe95c1c5866b2c43c5.png" alt="gradient-descent-visualize"><br>红色箭头是指在$(\theta_1,\theta_2)$这点的梯度，梯度方向即箭头方向(从低处指向高处)，梯度大小即箭头长度(表示在$\theta^i$点处最陡的那条切线的导数大小，该方向也是梯度上升最快的方向)</p>
+<p>蓝色曲线代表实际情况下参数$\theta_1$和$\theta_2$的更新过程图，每次更新沿着蓝色箭头方向loss会减小，蓝色箭头方向与红色箭头方向刚好相反，代表着梯度下降的方向</p>
+<p>因此，&#x3D;&#x3D;在整个gradient descent的过程中，梯度不一定是递减的(红色箭头的长度可以长短不一)，但是沿着梯度下降的方向，函数值loss一定是递减的，且当gradient&#x3D;0时，loss下降到了局部最小值，总结：梯度下降法指的是函数值loss随梯度下降的方向减小&#x3D;&#x3D;</p>
+<p>初始随机在三维坐标系中选取一个点，这个三维坐标系的三个变量分别为$(\theta_1,\theta_2,loss)$，我们的目标是找到最小的那个loss也就是三维坐标系中高度最低的那个点，而gradient梯度可以理解为高度上升最快的那个方向，它的反方向就是梯度下降最快的那个方向，于是每次update沿着梯度反方向，update的步长由梯度大小和learning rate共同决定，当某次update完成后，该点的gradient&#x3D;0，说明到达了局部最小值</p>
+<p>下面是关于gradient descent的一点思考：<br><img src="https://img-blog.csdnimg.cn/dda22fb18b0f4022bace7f425014a149.png" alt="gradient-byhand"></p>
+<h4 id="Learning-rate存在的问题"><a href="#Learning-rate存在的问题" class="headerlink" title="Learning rate存在的问题"></a>Learning rate存在的问题</h4><p>gradient descent过程中，影响结果的一个很关键的因素就是learning rate的大小</p>
+<ul>
+<li>如果learning rate刚刚好，就可以像下图中红色线段一样顺利地到达到loss的最小值</li>
+<li>如果learning rate太小的话，像下图中的蓝色线段，虽然最后能够走到local minimal的地方，但是它可能会走得非常慢，以至于你无法接受</li>
+<li>如果learning rate太大，像下图中的绿色线段，它的步伐太大了，它永远没有办法走到特别低的地方，可能永远在这个“山谷”的口上振荡而无法走下去</li>
+<li>如果learning rate非常大，就会像下图中的黄色线段，一瞬间就飞出去了，结果会造成update参数以后，loss反而会越来越大(这一点在上次的demo中有体会到，当lr过大的时候，每次更新loss反而会变大)<br><img src="https://img-blog.csdnimg.cn/dadeb5f2112f431d8e25ebbdcee3e16d.png" alt="/learning-rate"><br>当参数有很多个的时候(&gt;3)，其实我们很难做到将loss随每个参数的变化可视化出来(因为最多只能可视化出三维的图像，也就只能可视化三维参数)，但是我们可以把update的次数作为唯一的一个参数，将loss随着update的增加而变化的趋势给可视化出来(上图右半部分)</li>
+</ul>
+<p>所以做gradient descent一个很重要的事情是，&#x3D;&#x3D;要把不同的learning rate下，loss随update次数的变化曲线给可视化出来&#x3D;&#x3D;，它可以提醒你该如何调整当前的learning rate的大小，直到出现稳定下降的曲线</p>
+<h4 id="Adaptive-Learning-rates"><a href="#Adaptive-Learning-rates" class="headerlink" title="Adaptive Learning rates"></a>Adaptive Learning rates</h4><p>显然这样手动地去调整learning rates很麻烦，因此我们需要有一些自动调整learning rates的方法</p>
+<h5 id="最基本、最简单的大原则是：learning-rate通常是随着参数的update越来越小的"><a href="#最基本、最简单的大原则是：learning-rate通常是随着参数的update越来越小的" class="headerlink" title="最基本、最简单的大原则是：learning rate通常是随着参数的update越来越小的"></a>最基本、最简单的大原则是：learning rate通常是随着参数的update越来越小的</h5><p>因为在起始点的时候，通常是离最低点是比较远的，这时候步伐就要跨大一点；而经过几次update以后，会比较靠近目标，这时候就应该减小learning rate，让它能够收敛在最低点的地方</p>
+<p>举例：假设到了第t次update，此时$\eta^t&#x3D;\eta&#x2F; \sqrt{t+1}$</p>
+<p>这种方法使所有参数以同样的方式同样的learning rate进行update，而最好的状况是每个参数都给他不同的learning rate去update</p>
+<h5 id="Adagrad"><a href="#Adagrad" class="headerlink" title="Adagrad"></a>Adagrad</h5><blockquote>
+<p>Divide the learning rate of each parameter by the root mean square(方均根) of its previous derivatives</p>
+</blockquote>
+<p>Adagrad就是将不同参数的learning rate分开考虑的一种算法(adagrad算法update到后面速度会越来越慢，当然这只是adaptive算法中最简单的一种)</p>
+<p><img src="https://img-blog.csdnimg.cn/0bf352fdd4a4486cb7c217bda90358a5.png" alt="/adagrad-definition"><br>这里的w是function中的某个参数，t表示第t次update，$g^t$表示Loss对w的偏微分，而$\sigma^t$是之前所有Loss对w偏微分的方均根(根号下的平方均值)，这个值对每一个参数来说都是不一样的<br>$$<br>\begin{equation}<br>\begin{split}<br>&amp;Adagrad\<br>&amp;w^1&#x3D;w^0-\frac{\eta^0}{\sigma^0}\cdot g^0 \ \ \ \sigma^0&#x3D;\sqrt{(g^0)^2} \<br>&amp;w^2&#x3D;w^1-\frac{\eta^1}{\sigma^1}\cdot g^1 \ \ \ \sigma^1&#x3D;\sqrt{\frac{1}{2}[(g^0)^2+(g^1)^2]} \<br>&amp;w^3&#x3D;w^2-\frac{\eta2}{\sigma^2}\cdot g^2 \ \ \ \sigma^2&#x3D;\sqrt{\frac{1}{3}[(g^0)^2+(g^1)^2+(g^2)^2]} \<br>&amp;… \<br>&amp;w^{t+1}&#x3D;w^t-\frac{\eta^t}{\sigma^t}\cdot g^t \ \ \ \sigma^t&#x3D;\sqrt{\frac{1}{1+t}\sum\limits_{i&#x3D;0}^{t}(g^i)^2}<br>\end{split}<br>\end{equation}<br>$$<br>由于$\eta^t$和$\sigma^t$中都有一个$\sqrt{\frac{1}{1+t}}$的因子，两者相消，即可得到adagrad的最终表达式：</p>
+<p>$w^{t+1}&#x3D;w^t-\frac{\eta}{\sum\limits_{i&#x3D;0}^t(g^i)^2}\cdot g^t$</p>
+<h5 id="Adagrad的contradiction解释"><a href="#Adagrad的contradiction解释" class="headerlink" title="Adagrad的contradiction解释"></a>Adagrad的contradiction解释</h5><p>Adagrad的表达式$w^{t+1}&#x3D;w^t-\frac{\eta}{\sum\limits_{i&#x3D;0}^t(g^i)^2}\cdot g^t$里面有一件很矛盾的事情：</p>
+<p>我们在做gradient descent的时候，希望的是当梯度值即微分值$g^t$越大的时候(此时斜率越大，还没有接近最低点)更新的步伐要更大一些，但是Adagrad的表达式中，分母表示梯度越大步伐越小，分子却表示梯度越大步伐越大，两者似乎相互矛盾</p>
+<p><img src="https://img-blog.csdnimg.cn/f78fbfc2006844e9b96feddbf8073544.png" alt="adagrad-contradiction"></p>
+<p>在一些paper里是这样解释的：Adagrad要考虑的是，这个gradient有多surprise，即反差有多大，假设t&#x3D;4的时候$g^4$与前面的gradient反差特别大，那么$g^t$与$\sqrt{\frac{1}{t+1}\sum\limits_{i&#x3D;0}^t(g^i)^2}$之间的大小反差就会比较大，它们的商就会把这一反差效果体现出来</p>
+<p><img src="https://img-blog.csdnimg.cn/c5ce2f703dd74ccca25025bf80a2ccb0.png" alt="adagrad-reason"></p>
+<p><strong>gradient越大，离最低点越远这件事情在有多个参数的情况下是不一定成立的</strong></p>
+<p>如下图所示，w1和w2分别是loss function的两个参数，loss的值投影到该平面中以颜色深度表示大小，分别在w2和w1处垂直切一刀(这样就只有另一个参数的gradient会变化)，对应的情况为右边的两条曲线，可以看出，比起a点，c点距离最低点更近，但是它的gradient却越大<br><img src="https://img-blog.csdnimg.cn/c699db55c49449beb27de5db21da3644.png" alt="adagrad-cross-parameters"></p>
+<p>实际上，对于一个二次函数$y&#x3D;ax^2+bx+c$来说，最小值点的$x&#x3D;-\frac{b}{2a}$，而对于任意一点$x_0$，它迈出最好的步伐长度是$|x_0+\frac{b}{2a}|&#x3D;|\frac{2ax_0+b}{2a}|$(这样就一步迈到最小值点了)，联系该函数的一阶和二阶导数$y’&#x3D;2ax+b$、$y’’&#x3D;2a$，可以发现the best step is $|\frac{y’}{y’’}|$，也就是说他不仅跟一阶导数(gradient)有关，还跟二阶导师有关，因此我们可以通过这种方法重新比较上面的a和c点，就可以得到比较正确的答案</p>
+<p>再来回顾Adagrad的表达式：$w^{t+1}&#x3D;w^t-\frac{\eta}{\sum\limits_{i&#x3D;0}^t(g^i)^2}\cdot g^t$</p>
+<p>$g^t$就是一次微分，而分母中的$\sum\limits_{i&#x3D;0}^t(g^i)^2$反映了二次微分的大小，所以Adagrad想要做的事情就是，在不增加任何额外运算的前提下，想办法去估测二次微分的值</p>
+<p><img src="https://img-blog.csdnimg.cn/3d62d333319a4df487d1318c531234e8.png" alt="adagrad-second-derivative"></p>
+<h4 id="Stochastic-Gradicent-Descent"><a href="#Stochastic-Gradicent-Descent" class="headerlink" title="Stochastic Gradicent Descent"></a>Stochastic Gradicent Descent</h4><p>随机梯度下降的方法可以让训练更快速，传统的gradient descent的思路是看完所有的样本点之后再构建loss function，然后去update参数；而stochastic gradient descent的做法是，看到一个样本点就update一次，因此它的loss function不是所有样本点的error平方和，而是这个随机样本点的error平方<br><img src="https://img-blog.csdnimg.cn/8e876a8c0b3e4c889561971894e53e44.png" alt="/stochastic-gradient-descent!"></p>
+<p>stochastic gradient descent与传统gradient descent的效果对比如下：<br><img src="https://img-blog.csdnimg.cn/16a9d0185e03481193fd23caae783e47.png" alt="stochastic-visualize"></p>
+<h4 id="Feature-Scaling"><a href="#Feature-Scaling" class="headerlink" title="Feature Scaling"></a>Feature Scaling</h4><h5 id="概念介绍"><a href="#概念介绍" class="headerlink" title="概念介绍"></a>概念介绍</h5><p>特征缩放，当多个特征的分布范围很不一样时，最好将这些不同feature的范围缩放成一样<br><img src="https://img-blog.csdnimg.cn/cb44a766992448e495af4502074c897e.png" alt="feature-scaling"></p>
+<h5 id="原理解释"><a href="#原理解释" class="headerlink" title="原理解释"></a>原理解释</h5><p>$y&#x3D;b+w_1x_1+w_2x_2$，假设x1的值都是很小的，比如1,2…；x2的值都是很大的，比如100,200…</p>
+<p>此时去画出loss的error surface，如果对w1和w2都做一个同样的变动$\Delta w$，那么w1的变化对y的影响是比较小的，而w2的变化对y的影响是比较大的<br><img src="https://img-blog.csdnimg.cn/cc711bf54e6a4cc58e3b00d6ada1ecd1.png" alt="feature-scaling-example"></p>
+<p>左边的error surface表示，w1对y的影响比较小，所以w1对loss是有比较小的偏微分的，因此在w1的方向上图像是比较平滑的；w2对y的影响比较大，所以w2对loss的影响比较大，因此在w2的方向上图像是比较sharp的</p>
+<p>如果x1和x2的值，它们的scale是接近的，那么w1和w2对loss就会有差不多的影响力，loss的图像接近于圆形，那这样做对gradient descent有什么好处呢？</p>
+<h5 id="对gradient-decent的帮助"><a href="#对gradient-decent的帮助" class="headerlink" title="对gradient decent的帮助"></a>对gradient decent的帮助</h5><p>之前我们做的demo已经表明了，对于这种长椭圆形的error surface，如果不使用Adagrad之类的方法，是很难搞定它的，因为在像w1和w2这样不同的参数方向上，会需要不同的learning rate，用相同的lr很难达到最低点</p>
+<p>如果有scale的话，loss在参数w1、w2平面上的投影就是一个正圆形，update参数会比较容易</p>
+<p>而且gradient descent的每次update并不都是向着最低点走的，每次update的方向是顺着等高线的方向(梯度gradient下降的方向)，而不是径直走向最低点；但是当经过对input的scale使loss的投影是一个正圆的话，不管在这个区域的哪一个点，它都会向着圆心走。因此feature scaling对参数update的效率是有帮助的</p>
+<h5 id="如何做feature-scaling"><a href="#如何做feature-scaling" class="headerlink" title="如何做feature scaling"></a>如何做feature scaling</h5><p>假设有R个example(上标i表示第i个样本点)，$x^1,x^2,x^3,…,x^r,…x^R$，每一笔example，它里面都有一组feature(下标j表示该样本点的第j个特征)</p>
+<p>对每一个demension i，都去算出它的平均值mean&#x3D;$m_i$，以及标准差standard deviation&#x3D;$\sigma_i$</p>
+<p>对第r个example的第i个component，减掉均值，除以标准差，即$x_i^r&#x3D;\frac{x_i^r-m_i}{\sigma_i}$<br><img src="https://img-blog.csdnimg.cn/e596924e65004e8aaa174c6fbff06737.png" alt="feature-scaling-method"><br>说了那么多，实际上就是&#x3D;&#x3D;将每一个参数都归一化成标准正态分布，即$f(x_i)&#x3D;\frac{1}{\sqrt{2\pi}}e^{-\frac{x_i^2}{2}}$&#x3D;&#x3D;，其中$x_i$表示第i个参数</p>
+<h4 id="Gradient-Descent的理论基础"><a href="#Gradient-Descent的理论基础" class="headerlink" title="Gradient Descent的理论基础"></a>Gradient Descent的理论基础</h4><h5 id="Taylor-Series"><a href="#Taylor-Series" class="headerlink" title="Taylor Series"></a>Taylor Series</h5><p>泰勒表达式：$h(x)&#x3D;\sum\limits_{k&#x3D;0}^\infty \frac{h^{(k)}(x_0)}{k!}(x-x_0)^k&#x3D;h(x_0)+h’(x_0)(x-x_0)+\frac{h’’(x_0)}{2!}(x-x_0)^2+…$</p>
+<p>When x is close to $x_0$ :  $h(x)≈h(x_0)+h’(x_0)(x-x_0)$</p>
+<p>同理，对于二元函数，when x and y is close to $x_0$ and $y_0$：</p>
+<p>$h(x,y)≈h(x_0,y_0)+\frac{\partial h(x_0,y_0)}{\partial x}(x-x_0)+\frac{\partial h(x_0,y_0)}{\partial y}(y-y_0)$</p>
+<h5 id="从泰勒展开式推导出gradient-descent"><a href="#从泰勒展开式推导出gradient-descent" class="headerlink" title="从泰勒展开式推导出gradient descent"></a>从泰勒展开式推导出gradient descent</h5><p>对于loss图像上的某一个点(a,b)，如果我们想要找这个点附近loss最小的点，就可以用泰勒展开的思想</p>
+<p><img src="https://img-blog.csdnimg.cn/e688d0e132c84b5a850335e691e3bb67.png" alt="taylor-visualize"></p>
+<p>假设用一个red circle限定点的范围，这个圆足够小以满足泰勒展开的精度，那么此时我们的loss function就可以化简为：</p>
+<p>$L(\theta)≈L(a,b)+\frac{\partial L(a,b)}{\partial \theta_1}(\theta_1-a)+\frac{\partial L(a,b)}{\partial \theta_2}(\theta_2-b)$</p>
+<p>令$s&#x3D;L(a,b)$，$u&#x3D;\frac{\partial L(a,b)}{\partial \theta_1}$，$v&#x3D;\frac{\partial L(a,b)}{\partial \theta_2}$</p>
+<p>则$L(\theta)≈s+u\cdot (\theta_1-a)+v\cdot (\theta_2-b)$</p>
+<p>假定red circle的半径为d，则有限制条件：$(\theta_1-a)^2+(\theta_2-b)^2≤d^2$</p>
+<p>此时去求$L(\theta)_{min}$，这里有个小技巧，把$L(\theta)$转化为两个向量的乘积：$u\cdot (\theta_1-a)+v\cdot (\theta_2-b)&#x3D;(u,v)\cdot (\theta_1-a,\theta_2-b)&#x3D;(u,v)\cdot (\Delta \theta_1,\Delta \theta_2)$</p>
+<p>观察图形可知，当向量$(\theta_1-a,\theta_2-b)$与向量$(u,v)$反向，且刚好到达red circle的边缘时(用$\eta$去控制向量的长度)，$L(\theta)$最小</p>
+<p><img src="https://img-blog.csdnimg.cn/d3e74c223b4d40e9a72744a4329a06b4.png" alt="taylor"><br>$(\theta_1-a,\theta_2-b)$实际上就是$(\Delta \theta_1,\Delta \theta_2)$，于是$L(\theta)$局部最小值对应的参数为中心点减去gradient的加权<br>$$<br>\begin{bmatrix}<br>\Delta \theta_1 \<br>\Delta \theta_2<br>\end{bmatrix}&#x3D;<br>-\eta<br>\begin{bmatrix}<br>u \<br>v<br>\end{bmatrix}&#x3D;&gt;<br>\begin{bmatrix}<br>\theta_1 \<br>\theta_2<br>\end{bmatrix}&#x3D;<br>\begin{bmatrix}<br>a\<br>b<br>\end{bmatrix}-\eta<br>\begin{bmatrix}<br>u\<br>v<br>\end{bmatrix}&#x3D;<br>\begin{bmatrix}<br>a\<br>b<br>\end{bmatrix}-\eta<br>\begin{bmatrix}<br>\frac{\partial L(a,b)}{\partial \theta_1}\<br>\frac{\partial L(a,b)}{\partial \theta_2}<br>\end{bmatrix}<br>$$<br>这就是gradient descent在数学上的推导，注意它的重要前提是，给定的那个红色圈圈的范围要足够小，这样泰勒展开给我们的近似才会更精确，而$\eta$的值是与圆的半径成正比的，因此理论上learning rate要无穷小才能够保证每次gradient descent在update参数之后的loss会越来越小，于是当learning rate没有设置好，泰勒近似不成立，就有可能使gradient descent过程中的loss没有越来越小</p>
+<p>当然泰勒展开可以使用二阶、三阶乃至更高阶的展开，但这样会使得运算量大大增加，反而降低了运行效率</p>
+<h4 id="Gradient-Descent的限制"><a href="#Gradient-Descent的限制" class="headerlink" title="Gradient Descent的限制"></a>Gradient Descent的限制</h4><p>之前已经讨论过，gradient descent有一个问题是它会停在local minima的地方就停止update了</p>
+<p>事实上还有一个问题是，微分值是0的地方并不是只有local minima，settle point的微分值也是0</p>
+<p>以上都是理论上的探讨，到了实践的时候，其实当gradient的值接近于0的时候，我们就已经把它停下来了，但是微分值很小，不见得就是很接近local minima，也有可能像下图一样在一个高原的地方<br><img src="https://img-blog.csdnimg.cn/65ff39cee39f4d5b829e6972ef5422f1.png" alt="gradient-limits"><br>综上，&#x3D;&#x3D;<strong>gradient descent的限制是，它在gradient即微分值接近于0的地方就会停下来，而这个地方不一定是global minima，它可能是local minima，可能是saddle point鞍点，甚至可能是一个loss很高的plateau平缓高原</strong>&#x3D;&#x3D;</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://FraNny77.github.io">是甜豆腐脑</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://franny77.github.io/2022/07/14/3%20.%20Gradient%20descent/">http://franny77.github.io/2022/07/14/3%20.%20Gradient%20descent/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://FraNny77.github.io" target="_blank">是甜豆腐脑</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a></div><div class="post_share"><div class="social-share" data-image="http://imgoss.cnu.cc/2204/27/a4383d0f926b346eb1fe8ff128e5b703.jpg?x-oss-process=style/content" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/09/09/spiderNotes/"><img class="prev-cover" src="http://cache.yisu.com/upload/admin/customer_case_img/2019-08-08/1565261709.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">spyderNotes</div></div></a></div><div class="next-post pull-right"><a href="/2022/07/13/1.Regression/"><img class="next-cover" src="http://imgoss.cnu.cc/2204/27/a4383d0f926b346eb1fe8ff128e5b703.jpg?x-oss-process=style/content" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">1. Regression</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/07/13/2.%20Error%20origin/" title="2. Error origin"><img class="cover" src="http://imgoss.cnu.cc/2204/27/a4383d0f926b346eb1fe8ff128e5b703.jpg?x-oss-process=style/content" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-07-13</div><div class="title">2. Error origin</div></div></a></div><div><a href="/2022/07/12/Regularization/" title="Regularization"><img class="cover" src="http://imgoss.cnu.cc/2204/27/a4383d0f926b346eb1fe8ff128e5b703.jpg?x-oss-process=style/content" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-07-12</div><div class="title">Regularization</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/./img/tx.JPG" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">是甜豆腐脑</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">19</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">18</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/FraNny77.io"><i class="fab fa-github"></i><span>Gituhub</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/FraNny77" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:2556725169@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a><a class="social-icon" href="https://blog.csdn.net/FraNny13" target="_blank" title="Blog"><i class="fab fa-algolia"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Gradient-Descent"><span class="toc-text">Gradient Descent</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Review"><span class="toc-text">Review</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Learning-rate%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">Learning rate存在的问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Adaptive-Learning-rates"><span class="toc-text">Adaptive Learning rates</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%9C%80%E5%9F%BA%E6%9C%AC%E3%80%81%E6%9C%80%E7%AE%80%E5%8D%95%E7%9A%84%E5%A4%A7%E5%8E%9F%E5%88%99%E6%98%AF%EF%BC%9Alearning-rate%E9%80%9A%E5%B8%B8%E6%98%AF%E9%9A%8F%E7%9D%80%E5%8F%82%E6%95%B0%E7%9A%84update%E8%B6%8A%E6%9D%A5%E8%B6%8A%E5%B0%8F%E7%9A%84"><span class="toc-text">最基本、最简单的大原则是：learning rate通常是随着参数的update越来越小的</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Adagrad"><span class="toc-text">Adagrad</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Adagrad%E7%9A%84contradiction%E8%A7%A3%E9%87%8A"><span class="toc-text">Adagrad的contradiction解释</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Stochastic-Gradicent-Descent"><span class="toc-text">Stochastic Gradicent Descent</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Feature-Scaling"><span class="toc-text">Feature Scaling</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%A6%82%E5%BF%B5%E4%BB%8B%E7%BB%8D"><span class="toc-text">概念介绍</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%8E%9F%E7%90%86%E8%A7%A3%E9%87%8A"><span class="toc-text">原理解释</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AF%B9gradient-decent%E7%9A%84%E5%B8%AE%E5%8A%A9"><span class="toc-text">对gradient decent的帮助</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%81%9Afeature-scaling"><span class="toc-text">如何做feature scaling</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Gradient-Descent%E7%9A%84%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%80"><span class="toc-text">Gradient Descent的理论基础</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Taylor-Series"><span class="toc-text">Taylor Series</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BB%8E%E6%B3%B0%E5%8B%92%E5%B1%95%E5%BC%80%E5%BC%8F%E6%8E%A8%E5%AF%BC%E5%87%BAgradient-descent"><span class="toc-text">从泰勒展开式推导出gradient descent</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Gradient-Descent%E7%9A%84%E9%99%90%E5%88%B6"><span class="toc-text">Gradient Descent的限制</span></a></li></ol></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/09/14/MybatisNotes/" title="MybatisNotes"><img src="http://imgoss.cnu.cc/2204/27/a4383d0f926b346eb1fe8ff128e5b703.jpg?x-oss-process=style/content" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="MybatisNotes"/></a><div class="content"><a class="title" href="/2022/09/14/MybatisNotes/" title="MybatisNotes">MybatisNotes</a><time datetime="2022-09-14T01:42:07.000Z" title="发表于 2022-09-14 09:42:07">2022-09-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/09/09/spiderNotes/" title="spyderNotes"><img src="http://cache.yisu.com/upload/admin/customer_case_img/2019-08-08/1565261709.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="spyderNotes"/></a><div class="content"><a class="title" href="/2022/09/09/spiderNotes/" title="spyderNotes">spyderNotes</a><time datetime="2022-09-09T12:34:08.000Z" title="发表于 2022-09-09 20:34:08">2022-09-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/07/14/3%20.%20Gradient%20descent/" title="3. Gradient descent"><img src="http://imgoss.cnu.cc/2204/27/a4383d0f926b346eb1fe8ff128e5b703.jpg?x-oss-process=style/content" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="3. Gradient descent"/></a><div class="content"><a class="title" href="/2022/07/14/3%20.%20Gradient%20descent/" title="3. Gradient descent">3. Gradient descent</a><time datetime="2022-07-14T06:15:56.000Z" title="发表于 2022-07-14 14:15:56">2022-07-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/07/13/1.Regression/" title="1. Regression"><img src="http://imgoss.cnu.cc/2204/27/a4383d0f926b346eb1fe8ff128e5b703.jpg?x-oss-process=style/content" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="1. Regression"/></a><div class="content"><a class="title" href="/2022/07/13/1.Regression/" title="1. Regression">1. Regression</a><time datetime="2022-07-13T07:21:44.000Z" title="发表于 2022-07-13 15:21:44">2022-07-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/07/13/2.%20Error%20origin/" title="2. Error origin"><img src="http://imgoss.cnu.cc/2204/27/a4383d0f926b346eb1fe8ff128e5b703.jpg?x-oss-process=style/content" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="2. Error origin"/></a><div class="content"><a class="title" href="/2022/07/13/2.%20Error%20origin/" title="2. Error origin">2. Error origin</a><time datetime="2022-07-13T06:45:40.000Z" title="发表于 2022-07-13 14:45:40">2022-07-13</time></div></div></div></div></div></div></main><footer id="footer" style="background: #000000"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By 是甜豆腐脑</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">试着和曾经仰望的人并肩</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
